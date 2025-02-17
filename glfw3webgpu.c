@@ -78,20 +78,17 @@ WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* windo
         Display* x11_display = glfwGetX11Display();
         Window x11_window = glfwGetX11Window(window);
 
-#  ifdef WEBGPU_BACKEND_DAWN
         WGPUSurfaceSourceXlibWindow fromXlibWindow;
         fromXlibWindow.chain.sType = WGPUSType_SurfaceSourceXlibWindow;
-#  else
-        WGPUSurfaceDescriptorFromXlibWindow fromXlibWindow;
-        fromXlibWindow.chain.sType = WGPUSType_SurfaceDescriptorFromXlibWindow;
-#  endif
+
         fromXlibWindow.chain.next = NULL;
         fromXlibWindow.display = x11_display;
         fromXlibWindow.window = x11_window;
 
         WGPUSurfaceDescriptor surfaceDescriptor;
         surfaceDescriptor.nextInChain = &fromXlibWindow.chain;
-        surfaceDescriptor.label = NULL;
+        WGPUStringView nullString = { .data = NULL, .length = 0 };
+        surfaceDescriptor.label = nullString;
 
         return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }
