@@ -87,8 +87,8 @@ WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* windo
 
         WGPUSurfaceDescriptor surfaceDescriptor;
         surfaceDescriptor.nextInChain = &fromXlibWindow.chain;
-        WGPUStringView nullString = { .data = NULL, .length = 0 };
-        surfaceDescriptor.label = nullString;
+        WGPUStringView label = { .data = "X11 surface", .length = WGPU_STRLEN };
+        surfaceDescriptor.label = label;
 
         return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }
@@ -99,20 +99,16 @@ WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* windo
         struct wl_display* wayland_display = glfwGetWaylandDisplay();
         struct wl_surface* wayland_surface = glfwGetWaylandWindow(window);
 
-#  ifdef WEBGPU_BACKEND_DAWN
         WGPUSurfaceSourceWaylandSurface fromWaylandSurface;
         fromWaylandSurface.chain.sType = WGPUSType_SurfaceSourceWaylandSurface;
-#  else
-        WGPUSurfaceDescriptorFromWaylandSurface fromWaylandSurface;
-        fromWaylandSurface.chain.sType = WGPUSType_SurfaceDescriptorFromWaylandSurface;
-#  endif
         fromWaylandSurface.chain.next = NULL;
         fromWaylandSurface.display = wayland_display;
         fromWaylandSurface.surface = wayland_surface;
 
         WGPUSurfaceDescriptor surfaceDescriptor;
         surfaceDescriptor.nextInChain = &fromWaylandSurface.chain;
-        surfaceDescriptor.label = NULL;
+        WGPUStringView label = { .data = "Wayland surface", .length = WGPU_STRLEN };
+        surfaceDescriptor.label = label;
 
         return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }
